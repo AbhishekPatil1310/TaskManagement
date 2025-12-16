@@ -18,7 +18,10 @@ const allowedOrigins = [
     "http://localhost:5173",
     "http://localhost:5174",
     "http://localhost:3000",
-    "https://your-prod-domain.com"
+    "https://task-management-frontend-uhsr.vercel.app",
+  "https://task-management-frontend-uhsr-abhisheks-projects-680a2fd9.vercel.app",
+  "https://task-management-frontend-git-bf3603-abhisheks-projects-680a2fd9.vercel.app",
+  "https://task-management-frontend-uhsr-n19swj537.vercel.app"
 ];
 app.use((0, cors_1.default)({
     origin: allowedOrigins,
