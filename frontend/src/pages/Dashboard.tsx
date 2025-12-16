@@ -58,7 +58,7 @@ export default function Dashboard() {
 
   return (
     <Layout>
-      <div className="flex items-center justify-between mb-6">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-6 gap-4">
         <h1 className="text-3xl font-bold text-base-content dark:text-base-100">
           {view === "created"
             ? "Tasks I Created"
@@ -69,14 +69,14 @@ export default function Dashboard() {
 
         <Button
           onClick={() => navigate("/tasks/new")}
-          className="flex items-center gap-2"
+          className="flex items-center gap-2 w-full sm:w-auto"
         >
           <Plus size={20} />
           Create Task
         </Button>
       </div>
 
-      <div className="flex gap-4 mb-6">
+      <div className="flex flex-wrap gap-4 mb-6">
         <Select
           value={status || ""}
           onChange={(e) =>
@@ -85,6 +85,7 @@ export default function Dashboard() {
               return p;
             })
           }
+          className="w-full sm:w-auto"
         >
           <option value="">All Status</option>
           <option value="TODO">To Do</option>
@@ -101,6 +102,7 @@ export default function Dashboard() {
               return p;
             })
           }
+          className="w-full sm:w-auto"
         >
           <option value="">All Priority</option>
           <option value="LOW">Low</option>
@@ -112,7 +114,7 @@ export default function Dashboard() {
         <Button
           onClick={handleSortToggle}
           variant="ghost"
-          className="flex items-center gap-2 text-base-content dark:text-base-200"
+          className="flex items-center gap-2 text-base-content dark:text-base-200 w-full sm:w-auto"
         >
           <ArrowUpDown size={16} />
           {sortBy === "dueDate" && order === "asc"

@@ -54,7 +54,7 @@ export default function TaskDetail() {
   return (
     <Layout>
       <div className="max-w-2xl mx-auto">
-        <div className="flex justify-between items-center mb-6">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-6 gap-4">
           <h1 className="text-3xl font-bold text-base-content dark:text-base-100">
             {isEdit ? "Edit Task" : "Create Task"}
           </h1>
@@ -63,7 +63,7 @@ export default function TaskDetail() {
               variant="accent"
               onClick={handleDelete}
               disabled={deleteTaskMutation.isPending}
-              className="flex items-center gap-2"
+              className="flex items-center gap-2 w-full sm:w-auto"
             >
               <Trash2 size={20} />
               {deleteTaskMutation.isPending ? "Deleting..." : "Delete Task"}
