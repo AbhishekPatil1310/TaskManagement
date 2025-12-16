@@ -8,8 +8,8 @@ This project demonstrates strong fundamentals in **backend design, frontend stat
 
 ## 🚀 Live Demo
 
-* **Frontend**: **
-* **Backend API**: **
+* **Frontend**: *https://task-management-frontend-uhsr.vercel.app*
+* **Backend API**: *https://taskmanagement-dr56.onrender.com*
 
 ---
 
