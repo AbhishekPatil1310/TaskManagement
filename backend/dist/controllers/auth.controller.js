@@ -26,7 +26,11 @@ class AuthController {
         res.json({ id: user.id, email: user.email, name: user.name });
     }
     async logout(_, res) {
-        res.clearCookie("token");
+        res.clearCookie("token", {
+            httpOnly: true,
+            sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
+            secure: process.env.NODE_ENV === "production",
+        });
         res.status(204).send();
     }
 }
