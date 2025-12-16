@@ -7,21 +7,26 @@ import Skeleton from "../components/ui/Skeleton";
 import Button from "../components/ui/Button";
 import { Trash2 } from "lucide-react";
 import { useAuthStore } from "../store/auth.store";
-
+import type { Task } from "../types";
 
 export default function TaskDetail() {
   const user = useAuthStore((s) => s.user);
-  const { id } = useParams();
+  const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const queryClient = useQueryClient();
 
   const isEdit = Boolean(id);
 
-  const { data: task, isLoading } = useQuery({
+  const {
+    data: task,
+    isLoading
+  } = useQuery<Task>({
     queryKey: ["task", id],
-    queryFn: () => getTaskById(id!),
-    enabled: isEdit,
-    refetchOnWindowFocus: false, // 🔥 REQUIRED
+    queryFn: () => getTaskById(id!), // MUST return Promise<Task>
+    enabled: !!id,
+    staleTime: Infinity,
+    gcTime: Infinity, // ✅ v5 replacement
+    refetchOnWindowFocus: false,
     refetchOnReconnect: false
   });
 
@@ -30,17 +35,17 @@ export default function TaskDetail() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["tasks"] });
       navigate("/dashboard");
-    },
+    }
   });
 
   const handleDelete = () => {
+    if (!id) return;
     if (window.confirm("Are you sure you want to delete this task?")) {
-      deleteTaskMutation.mutate(id!);
+      deleteTaskMutation.mutate(id);
     }
   };
 
-  // ✅ Show delete button only if user created this task
-  const canDelete = isEdit && task?.creatorId === user?.id; // Replace with actual user ID
+  const canDelete = isEdit && task?.creatorId === user?.id;
 
   if (isEdit && isLoading) {
     return (
@@ -56,25 +61,29 @@ export default function TaskDetail() {
   return (
     <Layout>
       <div className="max-w-2xl mx-auto">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-6 gap-4">
-          <h1 className="text-3xl font-bold text-base-content dark:text-base-100">
+        <div className="flex justify-between items-center mb-6">
+          <h1 className="text-3xl font-bold">
             {isEdit ? "Edit Task" : "Create Task"}
           </h1>
+
           {canDelete && (
             <Button
               variant="accent"
               onClick={handleDelete}
               disabled={deleteTaskMutation.isPending}
-              className="flex items-center gap-2 w-full sm:w-auto"
             >
-              <Trash2 size={20} />
-              {deleteTaskMutation.isPending ? "Deleting..." : "Delete Task"}
+              <Trash2 size={18} />
+              {deleteTaskMutation.isPending ? "Deleting..." : "Delete"}
             </Button>
           )}
         </div>
 
-        <div className="bg-base-100 dark:bg-neutral-focus p-8 rounded-lg shadow-md">
-          <TaskForm task={task} onSuccess={() => navigate("/dashboard")} />
+        <div className="p-8 rounded shadow bg-base-100">
+          <TaskForm
+            key={task?.id ?? "create"}
+            task={task}
+            onSuccess={() => navigate("/dashboard")}
+          />
         </div>
       </div>
     </Layout>

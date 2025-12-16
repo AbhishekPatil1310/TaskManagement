@@ -31,9 +31,9 @@ export default function TaskForm({ task, onSuccess }: Props) {
   });
 
   const { reset } = form;
-  const mutation = useTaskForm(task?.id);
+  const mutation = useTaskForm();
 
-  // ✅ Single, simple effect: whenever `task` changes, reset form
+  // ✅ Reset form ONLY when task changes
   useEffect(() => {
     if (!task) return;
 
@@ -57,7 +57,11 @@ export default function TaskForm({ task, onSuccess }: Props) {
       }).filter(([_, v]) => v !== undefined && v !== "")
     );
 
-    await mutation.mutateAsync(payload as any);
+    await mutation.mutateAsync({
+      taskId: task?.id,
+      data: payload
+    });
+
     onSuccess?.();
   };
 
