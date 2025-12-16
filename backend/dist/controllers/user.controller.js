@@ -11,7 +11,6 @@ class UserController {
         res.json(profile);
     }
     async updateMe(req, res) {
-        console.log('the body from frontend is: ', req.body);
         const userId = req.user.id;
         const data = user_dto_1.UpdateProfileDto.parse(req.body);
         const updated = await userService.updateProfile(userId, data);

@@ -17,7 +17,6 @@ class TaskController {
         res.json(task);
     }
     async update(req, res) {
-        console.log('the body from frontend is: ', req.body);
         const data = task_dto_1.UpdateTaskDto.parse(req.body);
         const task = await taskService.updateTask(req.params.id, req.user.id, data);
         res.json(task);

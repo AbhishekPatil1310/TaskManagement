@@ -1,7 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-const task_service_1 = require("../services/task.service");
-const task_repository_1 = require("../repositories/task.repository");
+const task_service_1 = require("../task.service");
+const task_repository_1 = require("../../repositories/task.repository");
 jest.mock("../../repositories/task.repository");
 describe("TaskService.updateTask authorization", () => {
     const service = new task_service_1.TaskService();
