@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react";
+import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import type { TaskFormInput } from "../../schemas/task.schema";
@@ -25,7 +25,6 @@ type Props = {
 };
 
 export default function TaskForm({ task, onSuccess }: Props) {
-    const hasHydrated = useRef(false);
     const currentUser = useAuthStore((s) => s.user);
     const canAssign =
         !task || task.creatorId === currentUser?.id;
@@ -48,19 +47,16 @@ export default function TaskForm({ task, onSuccess }: Props) {
     const mutation = useTaskForm(task?.id);
 
     useEffect(() => {
-        if (!task) return;
-        if (hasHydrated.current) return;
-
-        reset({
-            title: task.title,
-            description: task.description ?? "",
-            dueDate: toDateInputValue(task.dueDate),
-            priority: task.priority,
-            status: task.status,
-            assignedToId: task.assignedToId ?? undefined
-        });
-
-        hasHydrated.current = true;
+        if (task) {
+            reset({
+                title: task.title,
+                description: task.description ?? "",
+                dueDate: toDateInputValue(task.dueDate),
+                priority: task.priority,
+                status: task.status,
+                assignedToId: task.assignedToId ?? undefined
+            });
+        }
     }, [task, reset]);
 
 
