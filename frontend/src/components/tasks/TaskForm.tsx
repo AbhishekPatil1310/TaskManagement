@@ -4,6 +4,9 @@ import { taskSchema } from "../../schemas/task.schema";
 import type { TaskFormInput } from "../../schemas/task.schema";
 import { useTaskForm } from "../../hooks/useTaskForm";
 import { useAuthStore } from "../../store/auth.store";
+import Input from "../ui/Input";
+import Select from "../ui/Select";
+import Button from "../ui/Button";
 import { useUsers } from "../../hooks/useUser";
 import type { Task } from "../../types";
 
@@ -71,34 +74,41 @@ export default function TaskForm({ task, onSuccess }: Props) {
         name="title"
         control={control}
         render={({ field }) => (
-          <input
+          <Input
             {...field}
-            className="w-full border p-2 rounded"
-            placeholder="Title"
+            label="Title"
+            placeholder="Task title"
           />
         )}
       />
 
-      <Controller
-        name="description"
-        control={control}
-        render={({ field }) => (
-          <textarea
-            {...field}
-            className="w-full border p-2 rounded"
-            placeholder="Description"
-          />
-        )}
-      />
+      <div className="space-y-1">
+        <label htmlFor="description" className="block text-sm font-medium text-base-content dark:text-base-200">
+          Description
+        </label>
+        <Controller
+          name="description"
+          control={control}
+          render={({ field }) => (
+            <textarea
+              id="description"
+              {...field}
+              rows={4}
+              className="mt-1 block w-full px-3 py-2 bg-white dark:bg-neutral border border-gray-300 dark:border-neutral-focus rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-primary focus:border-primary sm:text-sm"
+              placeholder="Task description"
+            />
+          )}
+        />
+      </div>
 
       <Controller
         name="dueDate"
         control={control}
         render={({ field }) => (
-          <input
-            type="date"
+          <Input
             {...field}
-            className="w-full border p-2 rounded"
+            label="Due Date"
+            type="date"
           />
         )}
       />
@@ -107,12 +117,12 @@ export default function TaskForm({ task, onSuccess }: Props) {
         name="priority"
         control={control}
         render={({ field }) => (
-          <select {...field} className="w-full border p-2 rounded">
+          <Select {...field} label="Priority">
             <option value="LOW">Low</option>
             <option value="MEDIUM">Medium</option>
             <option value="HIGH">High</option>
             <option value="URGENT">Urgent</option>
-          </select>
+          </Select>
         )}
       />
 
@@ -120,12 +130,12 @@ export default function TaskForm({ task, onSuccess }: Props) {
         name="status"
         control={control}
         render={({ field }) => (
-          <select {...field} className="w-full border p-2 rounded">
+          <Select {...field} label="Status">
             <option value="TODO">To Do</option>
             <option value="IN_PROGRESS">In Progress</option>
             <option value="REVIEW">Review</option>
             <option value="COMPLETED">Completed</option>
-          </select>
+          </Select>
         )}
       />
       {canAssign && (
@@ -133,7 +143,7 @@ export default function TaskForm({ task, onSuccess }: Props) {
           name="assignedToId"
           control={control}
           render={({ field }) => (
-            <select {...field} className="w-full border p-2 rounded">
+            <Select {...field} label="Assigned To">
               <option value="">
                 {usersLoading ? "Loading users..." : "Unassigned"}
               </option>
@@ -143,16 +153,17 @@ export default function TaskForm({ task, onSuccess }: Props) {
                   {user.name ?? user.email}
                 </option>
               ))}
-            </select>
+            </Select>
           )}
         />
       )}
 
 
-      <button
+      <Button
         type="submit"
         disabled={mutation.isPending}
-        className="bg-black text-white px-4 py-2 rounded"
+        variant="primary"
+        className="w-full"
       >
         {mutation.isPending
           ? task
@@ -161,7 +172,7 @@ export default function TaskForm({ task, onSuccess }: Props) {
           : task
             ? "Update Task"
             : "Create Task"}
-      </button>
+      </Button>
     </form>
   );
 }
