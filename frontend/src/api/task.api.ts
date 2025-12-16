@@ -20,6 +20,7 @@ export const updateTask = async (
   data: UpdateTaskInput
 ) => {
   const res = await api.put<Task>(`/tasks/${taskId}`, data);
+  console.log('the data input is frontend: ',data)
   return res.data;
 };
 
