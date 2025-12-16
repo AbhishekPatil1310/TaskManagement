@@ -18,7 +18,8 @@ const allowedOrigins = [
     "http://localhost:5173",
     "http://localhost:5174",
     "http://localhost:3000",
-    "https://task-management-frontend-uhsr.vercel.app"
+    "https://task-management-frontend-uhsr.vercel.app",
+    "https://eclectic-brioche-a66956.netlify.app"
 ];
 // Dynamically add Vercel deployment URLs if available
 if (process.env.VERCEL_URL) {
