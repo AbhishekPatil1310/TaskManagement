@@ -18,17 +18,20 @@ type Props = {
 };
 
 export default function TaskForm({ task, onSuccess }: Props) {
-  const form = useForm<TaskFormInput>({
-    resolver: zodResolver(taskSchema),
-    defaultValues: {
-      title: "",
-      description: "",
-      dueDate: "",
-      priority: "MEDIUM",
-      status: "TODO",
-      assignedToId: undefined
-    }
-  });
+ const form = useForm<TaskFormInput>({
+  resolver: zodResolver(taskSchema),
+  defaultValues: task
+    ? {
+        title: task.title,
+        description: task.description ?? "",
+        dueDate: toDateInputValue(task.dueDate),
+        priority: task.priority,
+        status: task.status,
+        assignedToId: task.assignedToId ?? undefined
+      }
+    : undefined
+});
+
 
   const { reset } = form;
   const mutation = useTaskForm();

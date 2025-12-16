@@ -58,6 +58,11 @@ export default function TaskDetail() {
     );
   }
 
+  // 🔥 CRITICAL GUARD
+  if (isEdit && !task) {
+    return null; // or loader
+  }
+
   return (
     <Layout>
       <div className="max-w-2xl mx-auto">
@@ -80,10 +85,10 @@ export default function TaskDetail() {
 
         <div className="p-8 rounded shadow bg-base-100">
           <TaskForm
-            key={task?.id ?? "create"}
             task={task}
             onSuccess={() => navigate("/dashboard")}
           />
+
         </div>
       </div>
     </Layout>
