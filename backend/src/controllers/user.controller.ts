@@ -12,7 +12,6 @@ export class UserController {
   }
 
   async updateMe(req: Request, res: Response) {
-    console.log('the body from frontend is: ', req.body)
     const userId = req.user!.id;
     const data = UpdateProfileDto.parse(req.body);
     const updated = await userService.updateProfile(userId, data);
@@ -26,3 +25,4 @@ export class UserController {
   }
 
 }
+
