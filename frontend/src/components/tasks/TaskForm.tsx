@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react";
+import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { taskSchema } from "../../schemas/task.schema";
@@ -32,12 +32,10 @@ export default function TaskForm({ task, onSuccess }: Props) {
 
   const { reset } = form;
   const mutation = useTaskForm(task?.id);
-  const taskIdRef = useRef(task?.id);
 
+  // ✅ Single, simple effect: whenever `task` changes, reset form
   useEffect(() => {
-    if (typeof window === "undefined") return;
     if (!task) return;
-    if (task.id === taskIdRef.current) return;
 
     reset({
       title: task.title,
@@ -47,9 +45,7 @@ export default function TaskForm({ task, onSuccess }: Props) {
       status: task.status,
       assignedToId: task.assignedToId ?? undefined
     });
-
-    taskIdRef.current = task.id;
-  }, [task?.id, reset]);
+  }, [task, reset]);
 
   const onSubmit = async (data: TaskFormInput) => {
     const payload = Object.fromEntries(
