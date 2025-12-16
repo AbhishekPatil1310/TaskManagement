@@ -18,15 +18,33 @@ const allowedOrigins = [
   "http://localhost:5173",
   "http://localhost:5174",
   "http://localhost:3000",
-  "https://task-management-frontend-uhsr.vercel.app",
-  "https://task-management-frontend-uhsr-abhisheks-projects-680a2fd9.vercel.app",
-  "https://task-management-frontend-git-bf3603-abhisheks-projects-680a2fd9.vercel.app",
-  "https://task-management-frontend-uhsr-n19swj537.vercel.app"
+  "https://task-management-frontend-uhsr.vercel.app"
 ];
+
+// Dynamically add Vercel deployment URLs if available
+if (process.env.VERCEL_URL) {
+  // For production Vercel deployments (main branch)
+  if (process.env.NODE_ENV === 'production') {
+    allowedOrigins.push(`https://${process.env.VERCEL_URL}`);
+  } else {
+    // For preview deployments (Vercel automatically provides a URL for each PR)
+    allowedOrigins.push(`https://${process.env.VERCEL_URL}`);
+    // Also consider VERCEL_BRANCH_URL for specific branch previews
+    if (process.env.VERCEL_BRANCH_URL) {
+      allowedOrigins.push(`https://${process.env.VERCEL_BRANCH_URL}`);
+    }
+  }
+}
 
 app.use(
   cors({
-    origin: allowedOrigins,
+    origin: (origin, callback) => {
+      if (!origin || allowedOrigins.indexOf(origin) !== -1) {
+        callback(null, true);
+      } else {
+        callback(new Error('Not allowed by CORS'));
+      }
+    },
     credentials: true
   })
 );
