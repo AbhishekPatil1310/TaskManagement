@@ -21,6 +21,8 @@ export default function TaskDetail() {
     queryKey: ["task", id],
     queryFn: () => getTaskById(id!),
     enabled: isEdit,
+    refetchOnWindowFocus: false, // 🔥 REQUIRED
+    refetchOnReconnect: false
   });
 
   const deleteTaskMutation = useMutation({
