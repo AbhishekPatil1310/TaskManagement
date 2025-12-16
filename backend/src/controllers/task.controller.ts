@@ -21,7 +21,6 @@ export class TaskController {
   }
 
   async update(req: Request, res: Response) {
-    console.log('the body from frontend is: ', req.body)
     const data = UpdateTaskDto.parse(req.body);
     const task = await taskService.updateTask(
       req.params.id,
@@ -55,3 +54,4 @@ async dashboard(req: Request, res: Response) {
 
 
 }
+
