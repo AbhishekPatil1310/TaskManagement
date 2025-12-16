@@ -20,7 +20,6 @@ export const updateTask = async (
   data: UpdateTaskInput
 ) => {
   const res = await api.put<Task>(`/tasks/${taskId}`, data);
-  console.log("the data is:", data)
   return res.data;
 };
 
@@ -33,4 +32,5 @@ export const createTask = async (data: TaskFormInput) => {
 export const getTaskById = async (id: string) => {
   const res = await api.get<Task>(`/tasks/${id}`);
   return res.data;
+
 };
