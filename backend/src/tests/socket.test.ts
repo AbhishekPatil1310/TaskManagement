@@ -1,0 +1,24 @@
+import { io, Socket } from "socket.io-client";
+
+const socket: Socket = io("http://localhost:5000", {
+  withCredentials: true,
+  transports: ["websocket"] // avoid polling noise
+});
+
+socket.on("connect", () => {
+  console.log("✅ Connected to socket server");
+  console.log("Socket ID:", socket.id);
+});
+
+socket.on("task:updated", (payload) => {
+  console.log("🔥 task:updated event received");
+  console.log(payload);
+});
+
+socket.on("disconnect", () => {
+  console.log("❌ Disconnected from socket server");
+});
+
+socket.on("connect_error", (err) => {
+  console.error("❌ Connection error:", err.message);
+});
