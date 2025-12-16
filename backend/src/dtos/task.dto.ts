@@ -11,7 +11,7 @@ export const CreateTaskDto = z.object({
 export const UpdateTaskDto = z.object({
   title: z.string().max(100).optional(),
   description: z.string().optional(),
-  dueDate: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, "Invalid date format. Expected YYYY-MM-DD").optional(),
+  dueDate: z.string().datetime().optional(),
   priority: z.enum(["LOW", "MEDIUM", "HIGH", "URGENT"]).optional(),
   status: z.enum(["TODO", "IN_PROGRESS", "REVIEW", "COMPLETED"]).optional(),
   assignedToId: z.string().uuid().nullable().optional()
