@@ -16,7 +16,8 @@ const allowedOrigins = [
     "https://task-management-frontend-uhsr.vercel.app",
     "https://task-management-frontend-uhsr-abhisheks-projects-680a2fd9.vercel.app",
     "https://task-management-frontend-git-bf3603-abhisheks-projects-680a2fd9.vercel.app",
-    "https://task-management-frontend-uhsr-n19swj537.vercel.app"
+    "https://task-management-frontend-uhsr-n19swj537.vercel.app",
+    "https://eclectic-brioche-a66956.netlify.app"
 ];
 exports.io = new socket_io_1.Server(httpServer, {
     cors: {
