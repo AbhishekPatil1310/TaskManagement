@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react";
+import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 
@@ -36,14 +36,8 @@ export default function TaskForm({ task, onSuccess }: Props) {
   const { reset } = form;
   const mutation = useTaskForm(task?.id);
 
-  // 🔑 Track which task we hydrated
-  const hydratedTaskId = useRef<string | null>(null);
-
   useEffect(() => {
     if (!task) return;
-
-    // ✅ Hydrate ONCE PER TASK ID
-    if (hydratedTaskId.current === task.id) return;
 
     reset({
       title: task.title,
@@ -53,8 +47,6 @@ export default function TaskForm({ task, onSuccess }: Props) {
       status: task.status,
       assignedToId: task.assignedToId ?? undefined
     });
-
-    hydratedTaskId.current = task.id;
   }, [task, reset]);
 
   const onSubmit = async (data: TaskFormInput) => {
