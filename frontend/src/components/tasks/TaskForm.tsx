@@ -3,6 +3,8 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { taskSchema } from "../../schemas/task.schema";
 import type { TaskFormInput } from "../../schemas/task.schema";
 import { useTaskForm } from "../../hooks/useTaskForm";
+import { useAuthStore } from "../../store/auth.store";
+import { useUsers } from "../../hooks/useUser";
 import type { Task } from "../../types";
 
 function toDateInputValue(value?: string) {
@@ -17,27 +19,32 @@ type Props = {
 };
 
 export default function TaskForm({ task, onSuccess }: Props) {
+  const currentUser = useAuthStore((s) => s.user);
+  const canAssign =
+    !task || task.creatorId === currentUser?.id;
+  const { data: users = [], isLoading: usersLoading } = useUsers();
+
   const mutation = useTaskForm();
 
   const form = useForm<TaskFormInput>({
     resolver: zodResolver(taskSchema),
     defaultValues: task
       ? {
-          title: task.title,
-          description: task.description ?? "",
-          dueDate: toDateInputValue(task.dueDate),
-          priority: task.priority,
-          status: task.status,
-          assignedToId: task.assignedToId ?? undefined
-        }
+        title: task.title,
+        description: task.description ?? "",
+        dueDate: toDateInputValue(task.dueDate),
+        priority: task.priority,
+        status: task.status,
+        assignedToId: task.assignedToId ?? undefined
+      }
       : {
-          title: "",
-          description: "",
-          dueDate: "",
-          priority: "MEDIUM",
-          status: "TODO",
-          assignedToId: undefined
-        }
+        title: "",
+        description: "",
+        dueDate: "",
+        priority: "MEDIUM",
+        status: "TODO",
+        assignedToId: undefined
+      }
   });
 
   const { control, handleSubmit } = form;
@@ -121,6 +128,26 @@ export default function TaskForm({ task, onSuccess }: Props) {
           </select>
         )}
       />
+      {canAssign && (
+        <Controller
+          name="assignedToId"
+          control={control}
+          render={({ field }) => (
+            <select {...field} className="w-full border p-2 rounded">
+              <option value="">
+                {usersLoading ? "Loading users..." : "Unassigned"}
+              </option>
+
+              {users.map((user) => (
+                <option key={user.id} value={user.id}>
+                  {user.name ?? user.email}
+                </option>
+              ))}
+            </select>
+          )}
+        />
+      )}
+
 
       <button
         type="submit"
@@ -132,8 +159,8 @@ export default function TaskForm({ task, onSuccess }: Props) {
             ? "Updating..."
             : "Creating..."
           : task
-          ? "Update Task"
-          : "Create Task"}
+            ? "Update Task"
+            : "Create Task"}
       </button>
     </form>
   );
