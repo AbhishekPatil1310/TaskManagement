@@ -1,5 +1,4 @@
-import { useEffect } from "react";
-import { useForm } from "react-hook-form";
+import { Controller, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { taskSchema } from "../../schemas/task.schema";
 import type { TaskFormInput } from "../../schemas/task.schema";
@@ -18,47 +17,38 @@ type Props = {
 };
 
 export default function TaskForm({ task, onSuccess }: Props) {
- const form = useForm<TaskFormInput>({
-  resolver: zodResolver(taskSchema),
-  defaultValues: task
-    ? {
-        title: task.title,
-        description: task.description ?? "",
-        dueDate: toDateInputValue(task.dueDate),
-        priority: task.priority,
-        status: task.status,
-        assignedToId: task.assignedToId ?? undefined
-      }
-    : undefined
-});
-
-
-  const { reset } = form;
   const mutation = useTaskForm();
 
-  // ✅ Reset form ONLY when task changes
-  useEffect(() => {
-    if (!task) return;
+  const form = useForm<TaskFormInput>({
+    resolver: zodResolver(taskSchema),
+    defaultValues: task
+      ? {
+          title: task.title,
+          description: task.description ?? "",
+          dueDate: toDateInputValue(task.dueDate),
+          priority: task.priority,
+          status: task.status,
+          assignedToId: task.assignedToId ?? undefined
+        }
+      : {
+          title: "",
+          description: "",
+          dueDate: "",
+          priority: "MEDIUM",
+          status: "TODO",
+          assignedToId: undefined
+        }
+  });
 
-    reset({
-      title: task.title,
-      description: task.description ?? "",
-      dueDate: toDateInputValue(task.dueDate),
-      priority: task.priority,
-      status: task.status,
-      assignedToId: task.assignedToId ?? undefined
-    });
-  }, [task, reset]);
+  const { control, handleSubmit } = form;
 
   const onSubmit = async (data: TaskFormInput) => {
-    const payload = Object.fromEntries(
-      Object.entries({
-        ...data,
-        dueDate: data.dueDate
-          ? new Date(data.dueDate).toISOString()
-          : undefined
-      }).filter(([_, v]) => v !== undefined && v !== "")
-    );
+    const payload = {
+      ...data,
+      dueDate: data.dueDate
+        ? new Date(data.dueDate).toISOString()
+        : undefined
+    };
 
     await mutation.mutateAsync({
       taskId: task?.id,
@@ -69,47 +59,68 @@ export default function TaskForm({ task, onSuccess }: Props) {
   };
 
   return (
-    <form
-      onSubmit={form.handleSubmit(onSubmit)}
-      className="space-y-4 max-w-lg"
-    >
-      <input
-        {...form.register("title")}
-        placeholder="Title"
-        className="w-full border p-2 rounded"
+    <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 max-w-lg">
+      <Controller
+        name="title"
+        control={control}
+        render={({ field }) => (
+          <input
+            {...field}
+            className="w-full border p-2 rounded"
+            placeholder="Title"
+          />
+        )}
       />
 
-      <textarea
-        {...form.register("description")}
-        placeholder="Description"
-        className="w-full border p-2 rounded"
+      <Controller
+        name="description"
+        control={control}
+        render={({ field }) => (
+          <textarea
+            {...field}
+            className="w-full border p-2 rounded"
+            placeholder="Description"
+          />
+        )}
       />
 
-      <input
-        type="date"
-        {...form.register("dueDate")}
-        className="w-full border p-2 rounded"
+      <Controller
+        name="dueDate"
+        control={control}
+        render={({ field }) => (
+          <input
+            type="date"
+            {...field}
+            className="w-full border p-2 rounded"
+          />
+        )}
       />
 
-      <select
-        {...form.register("priority")}
-        className="w-full border p-2 rounded"
-      >
-        <option value="LOW">Low</option>
-        <option value="MEDIUM">Medium</option>
-        <option value="HIGH">High</option>
-        <option value="URGENT">Urgent</option>
-      </select>
+      <Controller
+        name="priority"
+        control={control}
+        render={({ field }) => (
+          <select {...field} className="w-full border p-2 rounded">
+            <option value="LOW">Low</option>
+            <option value="MEDIUM">Medium</option>
+            <option value="HIGH">High</option>
+            <option value="URGENT">Urgent</option>
+          </select>
+        )}
+      />
 
-      <select
-        {...form.register("status")}
-        className="w-full border p-2 rounded"
-      >
-        <option value="TODO">To Do</option>
-        <option value="IN_PROGRESS">In Progress</option>
-        <option value="REVIEW">Review</option>
-        <option value="COMPLETED">Completed</option>
-      </select>
+      <Controller
+        name="status"
+        control={control}
+        render={({ field }) => (
+          <select {...field} className="w-full border p-2 rounded">
+            <option value="TODO">To Do</option>
+            <option value="IN_PROGRESS">In Progress</option>
+            <option value="REVIEW">Review</option>
+            <option value="COMPLETED">Completed</option>
+          </select>
+        )}
+      />
 
       <button
         type="submit"
