@@ -3,9 +3,12 @@ import { useAuthStore } from "../store/auth.store";
 
 const user = useAuthStore.getState().user;
 
-export const socket = io("http://localhost:5000", {
+const url = import.meta.env.VITE_BACKEND_URL 
+
+export const socket = io(url, {
   withCredentials: true,
     auth: {
     userId: user?.id
   }
 });
+
