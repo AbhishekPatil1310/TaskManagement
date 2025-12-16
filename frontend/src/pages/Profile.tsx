@@ -1,22 +1,18 @@
-import { useEffect, useRef } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { useForm } from "react-hook-form";
+import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 
 import Layout from "../components/layout/Layout";
 import Skeleton from "../components/ui/Skeleton";
 import { updateMe } from "../api/user.api";
-import {me} from "../api/auth.api"
+import { me } from "../api/auth.api";
 import { profileSchema } from "../schemas/profile.schema";
 import type { ProfileFormInput } from "../schemas/profile.schema";
 import Input from "../components/ui/Input";
 import Button from "../components/ui/Button";
 
-
 export default function Profile() {
   const queryClient = useQueryClient();
-  const hasHydrated = useRef(false);
-
 
   const { data: user, isLoading } = useQuery({
     queryKey: ["me"],
@@ -30,27 +26,8 @@ export default function Profile() {
     }
   });
 
-  const form = useForm<ProfileFormInput>({
-    resolver: zodResolver(profileSchema),
-    defaultValues: { name: "" }
-  });
-
-  const { reset } = form;
-
-useEffect(() => {
-  if (!user) return;
-  if (hasHydrated.current) return;
-
-  reset({
-    name: user.name,
-    email: user.email
-  });
-
-  hasHydrated.current = true;
-}, [user, reset]);
-
-
-  if (isLoading) {
+  // 🔥 GATE RENDER
+  if (isLoading || !user) {
     return (
       <Layout>
         <div className="space-y-4">
@@ -62,6 +39,16 @@ useEffect(() => {
     );
   }
 
+  const form = useForm<ProfileFormInput>({
+    resolver: zodResolver(profileSchema),
+    defaultValues: {
+      name: user.name,
+      email: user.email
+    }
+  });
+
+  const { handleSubmit, control } = form;
+
   const onSubmit = async (data: ProfileFormInput) => {
     await mutation.mutateAsync(data);
   };
@@ -69,30 +56,38 @@ useEffect(() => {
   return (
     <Layout>
       <div className="max-w-2xl mx-auto">
-        <h1 className="text-3xl font-bold text-base-content dark:text-base-100 mb-6">My Profile</h1>
+        <h1 className="text-3xl font-bold mb-6">My Profile</h1>
 
         <form
-          onSubmit={form.handleSubmit(onSubmit)}
-          className="space-y-6 bg-base-100 dark:bg-neutral-focus p-8 rounded-lg shadow-md"
+          onSubmit={handleSubmit(onSubmit)}
+          className="space-y-6 p-8 rounded-lg shadow-md bg-base-100"
         >
-          <Input
-            label="Email"
-            value={user?.email}
-            disabled
-            className="bg-base-200 dark:bg-neutral"
+          <Controller
+            name="email"
+            control={control}
+            render={({ field }) => (
+              <Input
+                {...field}
+                label="Email"
+                disabled
+                className="bg-base-200"
+              />
+            )}
           />
 
-          <Input
-            label="Name"
-            {...form.register("name")}
+          <Controller
+            name="name"
+            control={control}
+            render={({ field }) => (
+              <Input
+                {...field}
+                label="Name"
+              />
+            )}
           />
-          {form.formState.errors.name && <p className="text-error text-sm">{form.formState.errors.name.message}</p>}
 
-          <Button
-            type="submit"
-            disabled={mutation.isPending}
-          >
-            {mutation.isPending ? 'Saving...' : 'Save Changes'}
+          <Button type="submit" disabled={mutation.isPending}>
+            {mutation.isPending ? "Saving..." : "Save Changes"}
           </Button>
         </form>
       </div>
