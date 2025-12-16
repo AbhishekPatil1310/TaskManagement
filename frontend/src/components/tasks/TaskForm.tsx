@@ -1,7 +1,6 @@
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-
 import { taskSchema } from "../../schemas/task.schema";
 import type { TaskFormInput } from "../../schemas/task.schema";
 import { useTaskForm } from "../../hooks/useTaskForm";
@@ -10,9 +9,7 @@ import type { Task } from "../../types";
 function toDateInputValue(value?: string) {
   if (!value) return "";
   const date = new Date(value);
-  return isNaN(date.getTime())
-    ? ""
-    : date.toISOString().slice(0, 10);
+  return isNaN(date.getTime()) ? "" : date.toISOString().slice(0, 10);
 }
 
 type Props = {
@@ -35,9 +32,12 @@ export default function TaskForm({ task, onSuccess }: Props) {
 
   const { reset } = form;
   const mutation = useTaskForm(task?.id);
+  const taskIdRef = useRef(task?.id);
 
   useEffect(() => {
+    if (typeof window === "undefined") return;
     if (!task) return;
+    if (task.id === taskIdRef.current) return;
 
     reset({
       title: task.title,
@@ -47,7 +47,9 @@ export default function TaskForm({ task, onSuccess }: Props) {
       status: task.status,
       assignedToId: task.assignedToId ?? undefined
     });
-  }, [task, reset]);
+
+    taskIdRef.current = task.id;
+  }, [task?.id, reset]);
 
   const onSubmit = async (data: TaskFormInput) => {
     const payload = Object.fromEntries(
@@ -59,7 +61,7 @@ export default function TaskForm({ task, onSuccess }: Props) {
       }).filter(([_, v]) => v !== undefined && v !== "")
     );
 
-    await mutation.mutateAsync(payload);
+    await mutation.mutateAsync(payload as any);
     onSuccess?.();
   };
 
@@ -111,7 +113,13 @@ export default function TaskForm({ task, onSuccess }: Props) {
         disabled={mutation.isPending}
         className="bg-black text-white px-4 py-2 rounded"
       >
-        {task ? "Update Task" : "Create Task"}
+        {mutation.isPending
+          ? task
+            ? "Updating..."
+            : "Creating..."
+          : task
+          ? "Update Task"
+          : "Create Task"}
       </button>
     </form>
   );
