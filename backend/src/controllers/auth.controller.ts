@@ -32,7 +32,11 @@ export class AuthController {
   }
 
   async logout(_: Request, res: Response) {
-    res.clearCookie("token");
+    res.clearCookie("token", {
+      httpOnly: true,
+      sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
+      secure: process.env.NODE_ENV === "production",
+    });
     res.status(204).send();
   }
 }
