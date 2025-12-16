@@ -49,7 +49,6 @@ export default function TaskForm({ task, onSuccess }: Props) {
 
     useEffect(() => {
         if (!task) return;
-        if (hasHydrated.current) return;
 
         reset({
             title: task.title,
@@ -59,8 +58,6 @@ export default function TaskForm({ task, onSuccess }: Props) {
             status: task.status,
             assignedToId: task.assignedToId ?? undefined
         });
-
-        hasHydrated.current = true;
     }, [task, reset]);
 
 

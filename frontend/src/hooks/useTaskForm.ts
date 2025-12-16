@@ -14,6 +14,7 @@ export function useTaskForm(taskId?: string) {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["tasks"] });
+      queryClient.invalidateQueries({ queryKey: ["tasks", taskId] });
     }
   });
 }
