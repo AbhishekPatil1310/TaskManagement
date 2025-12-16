@@ -20,7 +20,7 @@ class AuthController {
         const { user, token } = await authService.login(data);
         res.cookie("token", token, {
             httpOnly: true,
-            sameSite: "lax",
+            sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
             secure: process.env.NODE_ENV === "production"
         });
         res.json({ id: user.id, email: user.email, name: user.name });
