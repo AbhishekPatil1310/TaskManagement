@@ -25,7 +25,6 @@ type Props = {
 };
 
 export default function TaskForm({ task, onSuccess }: Props) {
-    const hasHydrated = useRef(false);
     const currentUser = useAuthStore((s) => s.user);
     const canAssign =
         !task || task.creatorId === currentUser?.id;
