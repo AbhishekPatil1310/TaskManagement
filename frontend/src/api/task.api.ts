@@ -34,3 +34,9 @@ export const getTaskById = async (id: string) => {
   return res.data;
 
 };
+
+export const deleteTask = async (id: string) => {
+  const res = await api.delete(`/tasks/${id}`);
+  return res.data;
+};
+
