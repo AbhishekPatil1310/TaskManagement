@@ -18,6 +18,7 @@ class TaskController {
     }
     async update(req, res) {
         const data = task_dto_1.UpdateTaskDto.parse(req.body);
+        console.log("the update task data: ", data);
         const task = await taskService.updateTask(req.params.id, req.user.id, data);
         res.json(task);
     }

@@ -14,12 +14,13 @@ export class UserController {
   async updateMe(req: Request, res: Response) {
     const userId = req.user!.id;
     const data = UpdateProfileDto.parse(req.body);
+    console.log("the update task data: ", data)
     const updated = await userService.updateProfile(userId, data);
     res.json(updated);
   }
 
 
-    async list(req: Request, res: Response) {
+  async list(req: Request, res: Response) {
     const users = await userService.listUsers(req.user!.id);
     res.json(users);
   }

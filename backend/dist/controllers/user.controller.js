@@ -13,6 +13,7 @@ class UserController {
     async updateMe(req, res) {
         const userId = req.user.id;
         const data = user_dto_1.UpdateProfileDto.parse(req.body);
+        console.log("the update task data: ", data);
         const updated = await userService.updateProfile(userId, data);
         res.json(updated);
     }
