@@ -1,7 +1,8 @@
 import axios from "axios";
+const url = import.meta.env.VITE_BACKEND_URL 
 
 export const api = axios.create({
-  baseURL: "http://localhost:5000",
+  baseURL: url,
   withCredentials: true
 });
 
@@ -32,3 +33,4 @@ export const me = async () => {
   const res = await api.get("/users/me");
   return res.data;
 };
+
