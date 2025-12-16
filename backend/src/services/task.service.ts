@@ -3,7 +3,7 @@ import { NotificationRepository } from "../repositories/notification.repository"
 import { CreateTaskInput, UpdateTaskInput } from "../dtos/task.dto";
 import { prisma } from "../config/prisma";
 import { emitTaskUpdated, emitNotification } from "../socket";
-import { TaskStatus, TaskPriority } from "@prisma/client";
+import type { TaskStatus, TaskPriority } from "@prisma/client";
 
 const taskRepo = new TaskRepository();
 const notificationRepo = new NotificationRepository();
@@ -109,51 +109,49 @@ export class TaskService {
     return taskRepo.findAll();
   }
 
-async getDashboardTasks(
-  userId: string,
-  query: {
-    view?: "assigned" | "created" | "overdue";
-    status?: TaskStatus;
-    priority?: TaskPriority;
-    sortBy?: "dueDate";
-    order?: "asc" | "desc";
+  async getDashboardTasks(
+    userId: string,
+    query: {
+      view?: "assigned" | "created" | "overdue";
+      status?: TaskStatus;
+      priority?: TaskPriority;
+      sortBy?: "dueDate";
+      order?: "asc" | "desc";
+    }
+  ) {
+    const where: any = {};
+    const orderBy: any = {};
+
+    // Views
+    if (query.view === "assigned") {
+      where.assignedToId = userId;
+    }
+
+    if (query.view === "created") {
+      where.creatorId = userId;
+    }
+
+    if (query.view === "overdue") {
+      where.dueDate = { lt: new Date() };
+      where.status = { not: "COMPLETED" };
+    }
+
+    // Filters
+    if (query.status) {
+      where.status = query.status;
+    }
+
+    if (query.priority) {
+      where.priority = query.priority;
+    }
+
+    // ✅ Sorting
+    if (query.sortBy === "dueDate") {
+      orderBy.dueDate = query.order === "desc" ? "desc" : "asc";
+    }
+
+    return taskRepo.findDashboardTasks(where, orderBy);
   }
-) {
-  const where: any = {};
-  const orderBy: any = {};
-
-  // Views
-  if (query.view === "assigned") {
-    where.assignedToId = userId;
-  }
-
-  if (query.view === "created") {
-    where.creatorId = userId;
-  }
-
-  if (query.view === "overdue") {
-    where.dueDate = { lt: new Date() };
-    where.status = { not: "COMPLETED" };
-  }
-
-  // Filters
-  if (query.status) {
-    where.status = query.status;
-  }
-
-  if (query.priority) {
-    where.priority = query.priority;
-  }
-
-  // ✅ Sorting
-  if (query.sortBy === "dueDate") {
-    orderBy.dueDate = query.order === "desc" ? "desc" : "asc";
-  }
-
-  return taskRepo.findDashboardTasks(where, orderBy);
-}
-
-
 
   async getById(taskId: string, userId: string) {
     const task = await taskRepo.findById(taskId);

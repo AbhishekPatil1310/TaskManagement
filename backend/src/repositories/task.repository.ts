@@ -1,39 +1,39 @@
 import { prisma } from "../config/prisma";
 import { CreateTaskInput, UpdateTaskInput } from "../dtos/task.dto";
 import { Prisma } from "@prisma/client";
-
+import type { Task } from "@prisma/client";
 
 export class TaskRepository {
-  create(data: CreateTaskInput & { creatorId: string }) {
+  // ✅ All methods now use singleton prisma
+  async create(data: CreateTaskInput & { creatorId: string }): Promise<Task> {
     return prisma.task.create({ data });
   }
 
-  findById(id: string) {
+  async findById(id: string): Promise<Task | null> {
     return prisma.task.findUnique({ where: { id } });
   }
 
-  update(id: string, data: UpdateTaskInput) {
+  async update(id: string, data: UpdateTaskInput): Promise<Task> {
     return prisma.task.update({
       where: { id },
       data
     });
   }
 
-  delete(id: string) {
+  async delete(id: string): Promise<Task> {
     return prisma.task.delete({ where: { id } });
   }
 
-  findAll() {
+  async findAll(): Promise<Task[]> {
     return prisma.task.findMany({
       orderBy: { dueDate: "asc" }
     });
   }
 
-findDashboardTasks(where: any, orderBy?: any) {
-  return prisma.task.findMany({
-    where,
-    orderBy: orderBy ? orderBy : undefined
-  });
-}
-
+  async findDashboardTasks(where: any, orderBy?: any): Promise<Task[]> {
+    return prisma.task.findMany({
+      where,
+      orderBy: orderBy || undefined
+    });
+  }
 }
