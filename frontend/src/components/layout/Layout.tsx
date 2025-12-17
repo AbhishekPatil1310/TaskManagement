@@ -21,7 +21,7 @@ export default function Layout({ children }: { children: ReactNode }) {
           onClick={toggleSidebar}
         ></div>
       )}
-      <div className="flex flex-col flex-1">
+      <div className={`flex flex-col flex-1 ${isSidebarOpen ? "blur-sm lg:blur-none" : ""}`}>
         <Navbar toggleSidebar={toggleSidebar} />
         <main className="p-6 overflow-y-auto">
           {children}
