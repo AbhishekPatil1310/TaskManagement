@@ -7,6 +7,50 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+model User {
+  id            String         @id(map: "User_pkey") @default(uuid())
+  name          String
+  email         String         @unique(map: "User_email_key")
+  password      String
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+  notifications Notification[]
+  tasksAssigned Task[]         @relation("AssignedTasks")
+  tasksCreated  Task[]         @relation("CreatedTasks")
+
+  @@map("users")
+}
+
+model Task {
+  id           String       @id @default(uuid())
+  title        String       @db.VarChar(100)
+  description  String
+  dueDate      DateTime
+  priority     TaskPriority
+  status       TaskStatus   @default(TODO)
+  creatorId    String
+  assignedToId String?
+  createdAt    DateTime     @default(now())
+  updatedAt    DateTime     @updatedAt
+  assignee     User?        @relation("AssignedTasks", fields: [assignedToId], references: [id])
+  creator      User         @relation("CreatedTasks", fields: [creatorId], references: [id])
+
+  @@index([creatorId])
+  @@index([assignedToId])
+  @@index([dueDate])
+}
+
+model Notification {
+  id        String   @id @default(uuid())
+  userId    String
+  message   String
+  read      Boolean  @default(false)
+  createdAt DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id])
+
+  @@index([userId])
+}
+
 enum TaskPriority {
   LOW
   MEDIUM
@@ -19,54 +63,4 @@ enum TaskStatus {
   IN_PROGRESS
   REVIEW
   COMPLETED
-}
-
-model User {
-  id        String   @id @default(uuid())
-  name      String
-  email     String   @unique
-  password  String
-
-  tasksCreated Task[] @relation("CreatedTasks")
-  tasksAssigned Task[] @relation("AssignedTasks")
-
-  notifications Notification[]
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-}
-
-model Task {
-  id            String       @id @default(uuid())
-  title         String       @db.VarChar(100)
-  description   String
-  dueDate       DateTime
-  priority      TaskPriority
-  status        TaskStatus   @default(TODO)
-
-  creatorId     String
-  assignedToId  String?
-
-  creator   User @relation("CreatedTasks", fields: [creatorId], references: [id])
-  assignee  User? @relation("AssignedTasks", fields: [assignedToId], references: [id])
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  @@index([creatorId])
-  @@index([assignedToId])
-  @@index([dueDate])
-}
-
-model Notification {
-  id        String   @id @default(uuid())
-  userId    String
-  message   String
-  read      Boolean  @default(false)
-
-  user User @relation(fields: [userId], references: [id])
-
-  createdAt DateTime @default(now())
-
-  @@index([userId])
 }
